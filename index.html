@@ -6,26 +6,29 @@
 <meta name="theme-color" content="#17324d">
 <title>Team Work Location Tracker</title>
 <style>
-:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#17212b;background:#f3f6fa}
-*{box-sizing:border-box}body{margin:0}header{background:#17324d;color:white;padding:18px 16px}
+:root{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#17212b;background:#f3f6fa}
+*{box-sizing:border-box}body{margin:0}header{background:#17324d;color:#fff;padding:18px 16px}
 header h1{font-size:21px;margin:0 0 4px}header p{margin:0;color:#d7e5f2;font-size:13px}
-main{max-width:900px;margin:auto;padding:14px;display:grid;gap:14px}
-.card{background:white;border:1px solid #dce4ec;border-radius:14px;padding:15px;box-shadow:0 2px 8px #142b4010}
+main{max-width:980px;margin:auto;padding:14px;display:grid;gap:14px}
+.card{background:#fff;border:1px solid #dce4ec;border-radius:14px;padding:15px;box-shadow:0 2px 8px #142b4010}
 h2{font-size:17px;margin:0 0 12px}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
 .field{flex:1;min-width:145px}label{display:block;font-size:13px;font-weight:650;margin:0 0 6px}
-input,select,button{font:inherit;border-radius:9px;padding:11px;border:1px solid #c8d3df;background:white;color:#17212b;width:100%}
-button{cursor:pointer;font-weight:650}.primary{background:#1769aa;color:white;border-color:#1769aa}.secondary{background:#edf4fa}
-.statuses{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+input,select,button{font:inherit;border-radius:9px;padding:11px;border:1px solid #c8d3df;background:#fff;color:#17212b;width:100%}
+button{cursor:pointer;font-weight:650}.primary{background:#1769aa;color:#fff;border-color:#1769aa}.secondary{background:#edf4fa}
+button:disabled{opacity:.45;cursor:not-allowed}.statuses{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
 .statuses button{padding:13px 5px}.statuses button.active{outline:3px solid #a9ccec;background:#e7f3ff}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:#f1f6fb;border-radius:10px;padding:12px;text-align:center}
 .stat b{display:block;font-size:24px}.stat span{font-size:12px;color:#526579}
 .muted{color:#607080;font-size:13px}.good{color:#137547}.bad{color:#a62b2b}
 .monthbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}.monthbar button{width:auto}
-.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.weekday,.day{font-size:12px;text-align:center;padding:8px 2px}.weekday{font-weight:700;color:#607080}
-.day{border:1px solid #e0e7ef;border-radius:8px;min-height:48px;background:white}.day:disabled{background:#f0f2f4;color:#a4adb6;cursor:not-allowed}.day.chosen{border:2px solid #1769aa;background:#eaf4ff}.day .tiny{display:block;font-size:9px;margin-top:3px}
-.personlist{display:grid;gap:7px}.person{display:flex;justify-content:space-between;gap:8px;padding:9px 10px;border-radius:8px;background:#f6f8fa;font-size:13px}.pill{font-weight:700;border-radius:20px;padding:3px 8px;background:#e5edf5;white-space:nowrap}
-.tabs{display:flex;gap:7px;flex-wrap:wrap}.tabs button{width:auto}.hidden{display:none!important}
-@media(min-width:700px){main{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}}
+.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.weekday,.day{font-size:12px;text-align:center;padding:8px 2px}.weekday{font-weight:700;color:#607080}
+.day{border:1px solid #e0e7ef;border-radius:8px;min-height:52px;background:#fff}.day:disabled{background:#f0f2f4;color:#a4adb6;cursor:not-allowed}.day.chosen{border:2px solid #1769aa;background:#eaf4ff}
+.day .tiny{display:block;font-size:9px;margin-top:3px}.personlist{display:grid;gap:7px}
+.person{display:flex;justify-content:space-between;gap:8px;padding:9px 10px;border-radius:8px;background:#f6f8fa;font-size:13px;align-items:center}
+.pill{font-weight:700;border-radius:20px;padding:3px 8px;background:#e5edf5;white-space:nowrap}
+.hidden{display:none!important}.tabs{display:flex;gap:7px;flex-wrap:wrap}.tabs button{width:auto}
+.notice{padding:10px;border-radius:9px;background:#fff7df;color:#70521a;font-size:12px}
+@media(min-width:760px){main{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}}
 </style>
 </head>
 <body>
@@ -34,16 +37,16 @@ button{cursor:pointer;font-weight:650}.primary{background:#1769aa;color:white;bo
 <section class="card">
 <h2>Update your status</h2>
 <div class="row">
-<div class="field"><label for="employee">Your name</label><select id="employee"></select></div>
+<div class="field"><label for="employee">Select your name</label><select id="employee"></select></div>
 <div class="field"><label for="date">Date</label><input id="date" type="date"></div>
 </div>
 <div class="statuses">
-<button data-status="WFO" class="secondary">🏢 WFO</button>
-<button data-status="WFH" class="secondary">🏠 WFH</button>
-<button data-status="Leave" class="secondary">🌴 Leave</button>
+<button type="button" data-status="WFO" class="secondary">🏢 WFO</button>
+<button type="button" data-status="WFH" class="secondary">🏠 WFH</button>
+<button type="button" data-status="Leave" class="secondary">🌴 Leave</button>
 </div>
-<p id="saveMsg" class="muted">Choose your name, date and status.</p>
 <button id="save" class="primary" disabled>Save status</button>
+<p id="saveMsg" class="muted">Connecting to the shared team database…</p>
 </section>
 
 <section class="card">
@@ -53,43 +56,44 @@ button{cursor:pointer;font-weight:650}.primary{background:#1769aa;color:white;bo
 <div class="stat"><b id="wfhCount">0</b><span>WFH</span></div>
 <div class="stat"><b id="leaveCount">0</b><span>Leave</span></div>
 </div>
-<p class="muted" id="todayLabel"></p>
-<div id="todayList" class="personlist"></div>
+<p id="todayLabel" class="muted"></p><div id="todayList" class="personlist"></div>
 </section>
 
 <section class="card wide">
 <h2>Team calendar</h2>
 <div class="monthbar"><button id="prevMonth" class="secondary">← Previous</button><b id="monthLabel"></b><button id="nextMonth" class="secondary">Next →</button></div>
-<div class="calendar" id="calendar"></div>
-<p class="muted">Weekends and full-day US stock-market holidays are disabled. Early-close days remain selectable. Indian public holidays remain working days unless they coincide with a US market closure.</p>
+<div id="calendar" class="calendar"></div>
+<p class="muted">Monday–Friday only. Weekends and full-day US stock-market holidays are disabled. Early-close days remain working days. Indian holidays remain selectable unless they coincide with a US full-day closure.</p>
 </section>
 
 <section class="card wide">
-<h2>Selected date</h2>
+<h2>Selected date — team status</h2>
 <p id="selectedLabel" class="muted"></p><div id="selectedList" class="personlist"></div>
 </section>
 
 <section class="card wide">
-<h2>Management tools</h2>
-<p class="muted">For the manager and leads. This simple name-selection version is intended for voluntary team coordination, not secure identity verification.</p>
-<div class="row">
-<div class="field"><label for="role">View as</label><select id="role"><option value="member">Team member</option><option value="lead">Lead</option><option value="manager">Manager</option></select></div>
-<div class="field"><label for="pin">Management PIN (demo only)</label><input id="pin" type="password" placeholder="Enter PIN to unlock tools"></div>
+<h2>Management access</h2>
+<div class="notice">This version uses name selection and an in-app role/PIN convenience check. Because the website is public and uses anonymous Firebase sign-in, this is NOT secure identity verification. Do not use it as official attendance or store sensitive information.</div>
+<div class="row" style="margin-top:12px">
+<div class="field"><label for="role">Your role</label><select id="role"><option value="member">Team member</option><option value="lead">Lead</option><option value="manager">Manager</option><option value="admin">App owner / Admin</option></select></div>
+<div class="field"><label for="pin">Demo PIN</label><input id="pin" type="password" placeholder="Enter management PIN"></div>
 <button id="unlock" class="secondary" style="width:auto">Unlock</button>
 </div>
 <div id="management" class="hidden">
-<div class="row" style="margin-top:12px">
-<div class="field"><label for="fromDate">From</label><input id="fromDate" type="date"></div>
-<div class="field"><label for="toDate">To</label><input id="toDate" type="date"></div>
+<p id="roleMessage" class="muted"></p>
+<div class="row">
+<div class="field"><label for="fromDate">Report from</label><input id="fromDate" type="date"></div>
+<div class="field"><label for="toDate">Report to</label><input id="toDate" type="date"></div>
 <button id="export" class="primary" style="width:auto">Export Excel</button>
 </div>
-<div id="analytics" class="personlist" style="margin-top:12px"></div>
-<p class="muted">Correction history is recorded with the selected name and timestamp. PIN-based role selection is a convenience only; it is not secure access control.</p>
+<h2 style="margin-top:14px">Employee-wise summary</h2><div id="analytics" class="personlist"></div>
+<h2 style="margin-top:14px">Recent corrections / changes</h2><div id="auditList" class="personlist"></div>
 </div>
 </section>
+
 <section class="card wide">
-<h2>Connection</h2><p id="connection" class="muted">Connecting to shared team database…</p>
-<p class="muted">If the database is unavailable, saving will remain disabled. Do not enter sensitive or confidential information.</p>
+<h2>Database connection</h2><p id="connection" class="muted">Starting…</p>
+<p class="muted">Records are stored in Firestore and are not automatically deleted by this app. Keep at least two years of records; older records can be archived manually.</p>
 </section>
 </main>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -97,114 +101,158 @@ button{cursor:pointer;font-weight:650}.primary{background:#1769aa;color:white;bo
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCGw16AtHkayw_qa_HUwCMQUsFAeQSmPOA",
-  authDomain: "team-wfh-wfo-tracker.firebaseapp.com",
-  projectId: "team-wfh-wfo-tracker",
-  storageBucket: "team-wfh-wfo-tracker.firebasestorage.app",
-  messagingSenderId: "579873868975",
-  appId: "1:579873868975:web:f8254542788c66128dd85a",
-  measurementId: "G-7B41BZFQRC"
+/* Firebase web config identifies this project; it is not a server secret. */
+const firebaseConfig={
+ apiKey:"AIzaSyCGw16AtHkayw_qa_HUwCMQUsFAeQSmPOA",
+ authDomain:"team-wfh-wfo-tracker.firebaseapp.com",
+ projectId:"team-wfh-wfo-tracker",
+ storageBucket:"team-wfh-wfo-tracker.firebasestorage.app",
+ messagingSenderId:"579873868975",
+ appId:"1:579873868975:web:f8254542788c66128dd85a"
 };
 
-// Replace these sample labels with your team's names after testing.
-const members = [
+/* Replace these sample names with the real team names before launch. */
+const members=[
  {id:"manager",name:"Manager",role:"manager"},
- ...Array.from({length:5},(_,i)=>({id:"lead"+(i+1),name:"Lead "+(i+1),role:"lead"})),
+ {id:"lead1",name:"Lead 1",role:"lead"},{id:"lead2",name:"Lead 2",role:"lead"},
+ {id:"lead3",name:"Lead 3",role:"lead"},{id:"lead4",name:"Lead 4",role:"lead"},
+ {id:"lead5",name:"Lead 5",role:"lead"},
  ...Array.from({length:10},(_,i)=>({id:"processor"+(i+1),name:"Processor "+(i+1),role:"processor"}))
 ];
 
-// Full-day NYSE closures for the current planning horizon (Nov 2026–Apr 2027).
-// Early-close dates are intentionally not included.
-const usClosures = new Set([
+/* NYSE full-day closures in the current planning period. Confirm/update each year. */
+const usClosures=new Set([
  "2026-11-26","2026-12-25","2027-01-01","2027-01-18",
  "2027-02-15","2027-03-26"
 ]);
-const $ = id => document.getElementById(id);
-const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
-const today = new Date(); today.setHours(0,0,0,0);
-const maxDate = new Date(today.getFullYear(),today.getMonth()+5,0);
-let db=null, authUser=null, allRecords={}, selectedStatus="", currentMonth=new Date(today.getFullYear(),today.getMonth(),1), selectedDate=iso(today), managementUnlocked=false;
-const startPin = "ChangeThisPIN"; // Demo convenience only. Not a security boundary.
-
+/* Demo PIN only. Change it before testing; it is visible in this public source code. */
+const DEMO_PIN="2468";
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,"0");
+const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today=new Date();today.setHours(0,0,0,0);
+const minDate=new Date(today.getFullYear()-2,today.getMonth(),today.getDate());
+const maxDate=new Date(today.getFullYear(),today.getMonth()+5,today.getDate());
+let db=null,authUser=null,records={},auditRecords=[],selectedStatus="",selectedDate=iso(today);
+let currentMonth=new Date(today.getFullYear(),today.getMonth(),1),activeRole="member",unlocked=false;
 members.forEach(m=>{const o=document.createElement("option");o.value=m.id;o.textContent=m.name;$("employee").appendChild(o)});
-$("date").value=selectedDate; $("date").min=iso(today); $("date").max=iso(maxDate);
-$("fromDate").value=iso(new Date(today.getFullYear(),today.getMonth(),1)); $("toDate").value=selectedDate;
+$("date").value=selectedDate;$("date").min=iso(minDate);$("date").max=iso(maxDate);
+$("fromDate").value=iso(new Date(today.getFullYear(),today.getMonth(),1));$("toDate").value=selectedDate;
 $("todayLabel").textContent=today.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"});
-function isBlocked(dateStr){const d=new Date(dateStr+"T12:00:00");return d.getDay()===0||d.getDay()===6||usClosures.has(dateStr)||dateStr<iso(today)||dateStr>iso(maxDate)}
-function recordsFor(date){return Object.values(allRecords).filter(r=>r.date===date)}
-function statusPill(status){return status==="WFH"?"🏠 WFH":status==="WFO"?"🏢 WFO":status==="Leave"?"🌴 Leave":"Not updated"}
-function renderLists(){
- const todayRows=recordsFor(iso(today)); const counts={WFO:0,WFH:0,Leave:0};
- todayRows.forEach(r=>counts[r.status]=(counts[r.status]||0)+1);
- $("wfoCount").textContent=counts.WFO;$("wfhCount").textContent=counts.WFH;$("leaveCount").textContent=counts.Leave;
- $("todayList").innerHTML="";members.forEach(m=>{const r=todayRows.find(x=>x.memberId===m.id);addPerson($("todayList"),m.name,r?.status)});
- $("selectedLabel").textContent=new Date(selectedDate+"T12:00:00").toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"});
- $("selectedList").innerHTML="";const rows=recordsFor(selectedDate);
- members.forEach(m=>{const r=rows.find(x=>x.memberId===m.id);addPerson($("selectedList"),m.name,r?.status)});
- if(managementUnlocked)renderAnalytics();
+function blocked(ds){
+ const d=new Date(ds+"T12:00:00");
+ return Number.isNaN(d.getTime())||d.getDay()===0||d.getDay()===6||usClosures.has(ds)||ds<iso(minDate)||ds>iso(maxDate);
 }
-function addPerson(root,name,status){const d=document.createElement("div");d.className="person";const a=document.createElement("span");a.textContent=name;const b=document.createElement("span");b.className="pill";b.textContent=statusPill(status);d.append(a,b);root.appendChild(d)}
+function rowsOn(ds){return Object.values(records).filter(r=>r.date===ds)}
+function statusText(s){return s==="WFH"?"🏠 WFH":s==="WFO"?"🏢 WFO":s==="Leave"?"🌴 Leave":"Not updated"}
+function addPerson(root,name,status,extra){
+ const d=document.createElement("div");d.className="person";
+ const a=document.createElement("span");a.textContent=name+(extra?" · "+extra:"");
+ const b=document.createElement("span");b.className="pill";b.textContent=statusText(status);
+ d.append(a,b);root.appendChild(d);
+}
+function renderLists(){
+ const tr=rowsOn(iso(today)),c={WFO:0,WFH:0,Leave:0};tr.forEach(r=>{if(c[r.status]!==undefined)c[r.status]++});
+ $("wfoCount").textContent=c.WFO;$("wfhCount").textContent=c.WFH;$("leaveCount").textContent=c.Leave;
+ $("todayList").innerHTML="";members.forEach(m=>addPerson($("todayList"),m.name,tr.find(r=>r.memberId===m.id)?.status));
+ $("selectedLabel").textContent=new Date(selectedDate+"T12:00:00").toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+ $("selectedList").innerHTML="";const sr=rowsOn(selectedDate);
+ members.forEach(m=>addPerson($("selectedList"),m.name,sr.find(r=>r.memberId===m.id)?.status));
+ if(unlocked)renderManagement();
+}
 function renderCalendar(){
  $("monthLabel").textContent=currentMonth.toLocaleDateString(undefined,{month:"long",year:"numeric"});
  const root=$("calendar");root.innerHTML="";
- ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].forEach(x=>{const e=document.createElement("div");e.className="weekday";e.textContent=x;root.appendChild(e)});
- const first=new Date(currentMonth.getFullYear(),currentMonth.getMonth(),1);
- const offset=(first.getDay()+6)%7;
- for(let i=0;i<offset;i++){const e=document.createElement("div");root.appendChild(e)}
- const days=new Date(currentMonth.getFullYear(),currentMonth.getMonth()+1,0).getDate();
- for(let n=1;n<=days;n++){
-  const d=new Date(currentMonth.getFullYear(),currentMonth.getMonth(),n),key=iso(d),b=document.createElement("button");
-  b.className="day"+(key===selectedDate?" chosen":"");b.textContent=n;b.disabled=isBlocked(key);
-  const count=recordsFor(key).length;if(count){const s=document.createElement("span");s.className="tiny";s.textContent=count+" updated";b.appendChild(s)}
-  b.addEventListener("click",()=>{selectedDate=key;$("date").value=key;renderCalendar();renderLists()});root.appendChild(b);
+ ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].forEach(t=>{const e=document.createElement("div");e.className="weekday";e.textContent=t;root.appendChild(e)});
+ const first=new Date(currentMonth.getFullYear(),currentMonth.getMonth(),1),offset=(first.getDay()+6)%7;
+ for(let i=0;i<offset;i++)root.appendChild(document.createElement("div"));
+ const total=new Date(currentMonth.getFullYear(),currentMonth.getMonth()+1,0).getDate();
+ for(let n=1;n<=total;n++){
+  const d=new Date(currentMonth.getFullYear(),currentMonth.getMonth(),n),ds=iso(d),b=document.createElement("button");
+  b.type="button";b.className="day"+(ds===selectedDate?" chosen":"");b.textContent=n;b.disabled=blocked(ds);
+  const count=rowsOn(ds).length;if(count){const small=document.createElement("span");small.className="tiny";small.textContent=count+" updated";b.appendChild(small)}
+  b.addEventListener("click",()=>{selectedDate=ds;$("date").value=ds;renderCalendar();renderLists()});root.appendChild(b);
  }
- $("prevMonth").disabled=currentMonth.getMonth()===today.getMonth()&&currentMonth.getFullYear()===today.getFullYear();
- const lastAllowed=new Date(today.getFullYear(),today.getMonth()+5,1);
- $("nextMonth").disabled=currentMonth.getFullYear()===lastAllowed.getFullYear()&&currentMonth.getMonth()>=lastAllowed.getMonth();
+ const prev=new Date(currentMonth.getFullYear(),currentMonth.getMonth()-1,1),next=new Date(currentMonth.getFullYear(),currentMonth.getMonth()+1,1);
+ $("prevMonth").disabled=prev.getFullYear()<minDate.getFullYear()||(prev.getFullYear()===minDate.getFullYear()&&prev.getMonth()<minDate.getMonth());
+ $("nextMonth").disabled=next.getFullYear()>maxDate.getFullYear()||(next.getFullYear()===maxDate.getFullYear()&&next.getMonth()>maxDate.getMonth());
 }
-document.querySelectorAll("[data-status]").forEach(b=>b.addEventListener("click",()=>{selectedStatus=b.dataset.status;document.querySelectorAll("[data-status]").forEach(x=>x.classList.toggle("active",x===b));$("save").disabled=!db||!selectedStatus||!authUser}));
-$("date").addEventListener("change",()=>{selectedDate=$("date").value;currentMonth=new Date(selectedDate+"T12:00:00");renderCalendar();renderLists()});
-$("prevMonth").onclick=()=>{currentMonth=new Date(currentMonth.getFullYear(),currentMonth.getMonth()-1,1);renderCalendar()};
-$("nextMonth").onclick=()=>{currentMonth=new Date(currentMonth.getFullYear(),currentMonth.getMonth()+1,1);renderCalendar()};
+function canEdit(memberId){
+ if(!unlocked)return memberId===$("employee").value;
+ if(activeRole==="admin"||activeRole==="manager"||activeRole==="lead")return true;
+ return memberId===$("employee").value;
+}
+document.querySelectorAll("[data-status]").forEach(b=>b.addEventListener("click",()=>{
+ selectedStatus=b.dataset.status;document.querySelectorAll("[data-status]").forEach(x=>x.classList.toggle("active",x===b));
+ $("save").disabled=!db||!authUser;
+}));
+$("date").addEventListener("change",()=>{const v=$("date").value;if(!v||blocked(v)){alert("Choose a weekday within the allowed date range.");$("date").value=selectedDate;return}selectedDate=v;currentMonth=new Date(v+"T12:00:00");renderCalendar();renderLists()});
+$("employee").addEventListener("change",()=>{selectedStatus="";document.querySelectorAll("[data-status]").forEach(b=>b.classList.remove("active"));$("save").disabled=!db||!authUser});
+$("prevMonth").onclick=()=>{if(!$("prevMonth").disabled){currentMonth=new Date(currentMonth.getFullYear(),currentMonth.getMonth()-1,1);renderCalendar()}};
+$("nextMonth").onclick=()=>{if(!$("nextMonth").disabled){currentMonth=new Date(currentMonth.getFullYear(),currentMonth.getMonth()+1,1);renderCalendar()}};
 $("save").onclick=async()=>{
  const member=members.find(m=>m.id===$("employee").value),date=$("date").value;
- if(!member||!selectedStatus||isBlocked(date))return;
+ if(!member||!selectedStatus||blocked(date)||!canEdit(member.id))return;
  $("save").disabled=true;$("saveMsg").textContent="Saving…";
  try{
-  const ref=db.collection("statuses").doc(date+"_"+member.id),old=allRecords[ref.id];
-  const record={date,memberId:member.id,memberName:member.name,status:selectedStatus,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
-  await ref.set(record,{merge:true});
-  await db.collection("audit").add({date,memberId:member.id,memberName:member.name,oldStatus:old?.status||"Not updated",newStatus:selectedStatus,changedBy:authUser.uid,changedAt:firebase.firestore.FieldValue.serverTimestamp()});
+  const ref=db.collection("statuses").doc(date+"_"+member.id),old=records[ref.id];
+  const payload={date,memberId:member.id,memberName:member.name,status:selectedStatus,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedByName:members.find(m=>m.id===$("employee").value)?.name||"Team member"};
+  await ref.set(payload,{merge:true});
+  await db.collection("audit").add({date,memberId:member.id,memberName:member.name,oldStatus:old?.status||"Not updated",newStatus:selectedStatus,changedByName:members.find(m=>m.id===$("employee").value)?.name||"Team member",changedAt:firebase.firestore.FieldValue.serverTimestamp()});
   $("saveMsg").textContent="Saved successfully.";
- }catch(e){$("saveMsg").textContent="Could not save: "+e.message}
- $("save").disabled=false;
+ }catch(e){$("saveMsg").textContent="Save failed: "+e.message;$("saveMsg").className="muted bad"}
+ finally{$("save").disabled=!db||!authUser||!selectedStatus}
 };
-function renderAnalytics(){
- const box=$("analytics");box.innerHTML="";
- const rows=Object.values(allRecords).filter(r=>r.date>=$("fromDate").value&&r.date<=$("toDate").value);
- members.forEach(m=>{const mine=rows.filter(r=>r.memberId===m.id),wfo=mine.filter(r=>r.status==="WFO").length,wfh=mine.filter(r=>r.status==="WFH").length,leave=mine.filter(r=>r.status==="Leave").length;const d=document.createElement("div");d.className="person";d.textContent=`${m.name} — WFO ${wfo} · WFH ${wfh} · Leave ${leave}`;box.appendChild(d)});
+function renderManagement(){
+ const from=$("fromDate").value,to=$("toDate").value,subset=Object.values(records).filter(r=>r.date>=from&&r.date<=to);
+ $("analytics").innerHTML="";
+ members.forEach(m=>{
+  const mine=subset.filter(r=>r.memberId===m.id),wfo=mine.filter(r=>r.status==="WFO").length,wfh=mine.filter(r=>r.status==="WFH").length,leave=mine.filter(r=>r.status==="Leave").length;
+  const d=document.createElement("div");d.className="person";d.textContent=`${m.name} — WFO ${wfo} · WFH ${wfh} · Leave ${leave}`;$("analytics").appendChild(d);
+ });
+ $("auditList").innerHTML="";
+ auditRecords.slice(0,30).forEach(a=>{
+  const d=document.createElement("div");d.className="person";
+  const when=a.changedAt?.toDate?a.changedAt.toDate().toLocaleString():"recently";
+  d.textContent=`${a.memberName}: ${a.oldStatus} → ${a.newStatus} · by ${a.changedByName||"team member"} · ${when}`;
+  $("auditList").appendChild(d);
+ });
 }
 $("unlock").onclick=()=>{
  const role=$("role").value;
- if((role==="manager"||role==="lead")&&$("pin").value===startPin){managementUnlocked=true;$("management").classList.remove("hidden");renderAnalytics();$("pin").value="";$("connection").textContent+=" Management view opened (demo PIN)."}
- else {managementUnlocked=false;$("management").classList.add("hidden");alert("PIN not accepted.")}
+ if((role==="lead"||role==="manager"||role==="admin")&&$("pin").value!==DEMO_PIN){alert("Demo PIN incorrect.");return}
+ activeRole=role;unlocked=role!=="member";$("management").classList.toggle("hidden",!unlocked);
+ $("roleMessage").textContent=role==="member"?"Member view: you can update your own selected name.":role==="lead"?"Lead view: correction tools and team history.":role==="manager"?"Manager view: corrections, team history and analytics.":"Admin view: corrections, team history, analytics and Excel export.";
+ renderManagement();
 };
-$("fromDate").onchange=renderAnalytics;$("toDate").onchange=renderAnalytics;
+$("fromDate").onchange=()=>{if(unlocked)renderManagement()};$("toDate").onchange=()=>{if(unlocked)renderManagement()};
 $("export").onclick=()=>{
- if(!window.XLSX){alert("Excel export library did not load. Try again with internet.");return}
- const rows=[["Date","Employee","Status"],...Object.values(allRecords).filter(r=>r.date>=$("fromDate").value&&r.date<=$("toDate").value).sort((a,b)=>a.date.localeCompare(b.date)).map(r=>[r.date,r.memberName,r.status])];
- const ws=XLSX.utils.aoa_to_sheet(rows),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Team Status");XLSX.writeFile(wb,"team-work-location-report.xlsx");
+ if(!window.XLSX){alert("Excel export library did not load. Check your internet connection.");return}
+ const from=$("fromDate").value,to=$("toDate").value;
+ const data=[["Date","Employee","Status","Last updated"],...Object.values(records).filter(r=>r.date>=from&&r.date<=to).sort((a,b)=>a.date.localeCompare(b.date)).map(r=>[r.date,r.memberName,r.status,r.updatedAt?.toDate?r.updatedAt.toDate().toLocaleString():""])];
+ const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(data),"Team status");
+ const audit=[["Date","Employee","Old status","New status","Changed by","Changed at"],...auditRecords.filter(a=>a.date>=from&&a.date<=to).map(a=>[a.date,a.memberName,a.oldStatus,a.newStatus,a.changedByName||"",a.changedAt?.toDate?a.changedAt.toDate().toLocaleString():""])];
+ XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(audit),"Change history");
+ XLSX.writeFile(wb,"team-work-location-report.xlsx");
 };
-renderCalendar();renderLists();
-try{
- firebase.initializeApp(firebaseConfig);const auth=firebase.auth();db=firebase.firestore();
- await auth.signInAnonymously();authUser=auth.currentUser;
- $("connection").textContent="Signed in. Connecting to Firestore…";
- db.collection("statuses").onSnapshot(snap=>{
-  allRecords={};snap.forEach(doc=>allRecords[doc.id]=doc.data());$("connection").textContent="Connected. Shared updates are live.";renderCalendar();renderLists();$("save").disabled=!selectedStatus;
- },err=>{$("connection").textContent="Firestore access error: "+err.message;$("connection").className="muted bad"});
-}catch(e){$("connection").textContent="Firebase setup error: "+e.message;$("connection").className="muted bad"}
+function startFirebase(){
+ try{
+  firebase.initializeApp(firebaseConfig);db=firebase.firestore();
+  firebase.auth().signInAnonymously().then(user=>{
+   authUser=user;$("connection").textContent="Signed in. Loading shared team updates…";$("connection").className="muted good";
+   $("save").disabled=!selectedStatus;
+   db.collection("statuses").onSnapshot(snap=>{
+    records={};snap.forEach(doc=>records[doc.id]=doc.data());
+    $("connection").textContent="Connected — shared updates are live.";$("connection").className="muted good";
+    renderCalendar();renderLists();$("save").disabled=!selectedStatus;
+   },err=>{$("connection").textContent="Firestore access error: "+err.message;$("connection").className="muted bad";$("save").disabled=true});
+   db.collection("audit").orderBy("changedAt","desc").limit(100).onSnapshot(snap=>{
+    auditRecords=[];snap.forEach(doc=>auditRecords.push(doc.data()));if(unlocked)renderManagement();
+   },err=>{if(unlocked)$("auditList").textContent="Change history unavailable: "+err.message});
+  }).catch(e=>{$("connection").textContent="Sign-in error: "+e.message;$("connection").className="muted bad"});
+ }catch(e){$("connection").textContent="Firebase setup error: "+e.message;$("connection").className="muted bad"}
+}
+renderCalendar();renderLists();startFirebase();
 </script>
 </body>
 </html>
