@@ -63,7 +63,7 @@ button:disabled{opacity:.45;cursor:not-allowed}.statuses{display:grid;grid-templ
 <h2>Team calendar</h2>
 <div class="monthbar"><button id="prevMonth" class="secondary">← Previous</button><b id="monthLabel"></b><button id="nextMonth" class="secondary">Next →</button></div>
 <div id="calendar" class="calendar"></div>
-<p class="muted">Monday–Friday only. Weekends and full-day US stock-market holidays are disabled. Early-close days remain working days. Indian holidays remain selectable unless they coincide with a US full-day closure.</p>
+<p class="muted">Monday–Friday only. Weekends and full-day US stock-market holidays are disabled. Early-close days remain selectable. Indian holidays remain selectable. Holiday dates are preloaded for the current five-month planning window and should be refreshed when the window advances.</p>
 </section>
 
 <section class="card wide">
@@ -73,10 +73,10 @@ button:disabled{opacity:.45;cursor:not-allowed}.statuses{display:grid;grid-templ
 
 <section class="card wide">
 <h2>Management access</h2>
-<div class="notice">This version uses name selection and an in-app role/PIN convenience check. Because the website is public and uses anonymous Firebase sign-in, this is NOT secure identity verification. Do not use it as official attendance or store sensitive information.</div>
+<div class="notice">Management PIN: 684291. This is a convenience check only: the site uses public client-side code and anonymous Firebase access, so it cannot securely verify who is a lead/manager or prevent direct database edits. Use this only for voluntary team coordination, not official attendance or sensitive information.</div>
 <div class="row" style="margin-top:12px">
-<div class="field"><label for="role">Your role</label><select id="role"><option value="member">Team member</option><option value="lead">Lead</option><option value="manager">Manager</option><option value="admin">App owner / Admin</option></select></div>
-<div class="field"><label for="pin">Demo PIN</label><input id="pin" type="password" placeholder="Enter management PIN"></div>
+<div class="field"><label for="role">Your role</label><select id="role"><option value="member">Team member</option><option value="lead">Lead</option><option value="manager">Manager</option></select></div>
+<div class="field"><label for="pin">Demo PIN</label><input id="pin" type="password" inputmode="numeric" placeholder="Enter management PIN"></div>
 <button id="unlock" class="secondary" style="width:auto">Unlock</button>
 </div>
 <div id="management" class="hidden">
@@ -87,13 +87,13 @@ button:disabled{opacity:.45;cursor:not-allowed}.statuses{display:grid;grid-templ
 <button id="export" class="primary" style="width:auto">Export Excel</button>
 </div>
 <h2 style="margin-top:14px">Employee-wise summary</h2><div id="analytics" class="personlist"></div>
-<h2 style="margin-top:14px">Recent corrections / changes</h2><div id="auditList" class="personlist"></div>
+<h2 style="margin-top:14px">Change history</h2><p class="muted">Shows recorded changes for the report period; exported with the status report.</p><div id="auditList" class="personlist"></div>
 </div>
 </section>
 
 <section class="card wide">
 <h2>Database connection</h2><p id="connection" class="muted">Starting…</p>
-<p class="muted">Records are stored in Firestore and are not automatically deleted by this app. Keep at least two years of records; older records can be archived manually.</p>
+<p class="muted">Records are stored in Firestore and are not automatically deleted by this app. The app shows the previous two years and allows planning up to five months ahead. Keep Firestore records for at least two years; older records are not automatically purged.</p>
 </section>
 </main>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -111,13 +111,24 @@ const firebaseConfig={
  appId:"1:579873868975:web:f8254542788c66128dd85a"
 };
 
-/* Replace these sample names with the real team names before launch. */
+/* Team roster supplied by the team owner. Stable IDs are used in Firestore. */
 const members=[
- {id:"manager",name:"Manager",role:"manager"},
- {id:"lead1",name:"Lead 1",role:"lead"},{id:"lead2",name:"Lead 2",role:"lead"},
- {id:"lead3",name:"Lead 3",role:"lead"},{id:"lead4",name:"Lead 4",role:"lead"},
- {id:"lead5",name:"Lead 5",role:"lead"},
- ...Array.from({length:10},(_,i)=>({id:"processor"+(i+1),name:"Processor "+(i+1),role:"processor"}))
+ {id:"manager",name:"Regish",role:"manager"},
+ {id:"lead1",name:"Shashank",role:"lead"},
+ {id:"lead2",name:"Uday",role:"lead"},
+ {id:"lead3",name:"Mukesh",role:"lead"},
+ {id:"lead4",name:"Ashika",role:"lead"},
+ {id:"lead5",name:"Shivakumar",role:"lead"},
+ {id:"processor1",name:"Mookambika",role:"processor"},
+ {id:"processor2",name:"Manohar",role:"processor"},
+ {id:"processor3",name:"Shalini",role:"processor"},
+ {id:"processor4",name:"Ajay",role:"processor"},
+ {id:"processor5",name:"Suchithra",role:"processor"},
+ {id:"processor6",name:"Mahesh",role:"processor"},
+ {id:"processor7",name:"Tejas",role:"processor"},
+ {id:"processor8",name:"Hemachandra",role:"processor"},
+ {id:"processor9",name:"Ganavinaya",role:"processor"},
+ {id:"processor10",name:"Yashaswini",role:"processor"}
 ];
 
 /* NYSE full-day closures in the current planning period. Confirm/update each year. */
@@ -125,8 +136,8 @@ const usClosures=new Set([
  "2026-11-26","2026-12-25","2027-01-01","2027-01-18",
  "2027-02-15","2027-03-26"
 ]);
-/* Demo PIN only. Change it before testing; it is visible in this public source code. */
-const DEMO_PIN="2468";
+/* Shared management PIN is a convenience gate only, not secure authentication. */
+const MANAGEMENT_PIN="684291";
 const $=id=>document.getElementById(id);
 const pad=n=>String(n).padStart(2,"0");
 const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
@@ -179,7 +190,7 @@ function renderCalendar(){
 }
 function canEdit(memberId){
  if(!unlocked)return memberId===$("employee").value;
- if(activeRole==="admin"||activeRole==="manager"||activeRole==="lead")return true;
+ if(activeRole==="manager"||activeRole==="lead")return true;
  return memberId===$("employee").value;
 }
 document.querySelectorAll("[data-status]").forEach(b=>b.addEventListener("click",()=>{
@@ -220,9 +231,9 @@ function renderManagement(){
 }
 $("unlock").onclick=()=>{
  const role=$("role").value;
- if((role==="lead"||role==="manager"||role==="admin")&&$("pin").value!==DEMO_PIN){alert("Demo PIN incorrect.");return}
+ if((role==="lead"||role==="manager")&&$("pin").value!==MANAGEMENT_PIN){alert("Management PIN incorrect.");return}
  activeRole=role;unlocked=role!=="member";$("management").classList.toggle("hidden",!unlocked);
- $("roleMessage").textContent=role==="member"?"Member view: you can update your own selected name.":role==="lead"?"Lead view: correction tools and team history.":role==="manager"?"Manager view: corrections, team history and analytics.":"Admin view: corrections, team history, analytics and Excel export.";
+ $("roleMessage").textContent=role==="member"?"Member view: you can update your own selected name.":role==="lead"?"Lead view: correction tools and team history.":role==="manager"?"Manager view: corrections, team history, analytics and Excel export.":"Member view: you can update your own selected name.";
  renderManagement();
 };
 $("fromDate").onchange=()=>{if(unlocked)renderManagement()};$("toDate").onchange=()=>{if(unlocked)renderManagement()};
@@ -246,7 +257,7 @@ function startFirebase(){
     $("connection").textContent="Connected — shared updates are live.";$("connection").className="muted good";
     renderCalendar();renderLists();$("save").disabled=!selectedStatus;
    },err=>{$("connection").textContent="Firestore access error: "+err.message;$("connection").className="muted bad";$("save").disabled=true});
-   db.collection("audit").orderBy("changedAt","desc").limit(100).onSnapshot(snap=>{
+   db.collection("audit").orderBy("changedAt","desc").onSnapshot(snap=>{
     auditRecords=[];snap.forEach(doc=>auditRecords.push(doc.data()));if(unlocked)renderManagement();
    },err=>{if(unlocked)$("auditList").textContent="Change history unavailable: "+err.message});
   }).catch(e=>{$("connection").textContent="Sign-in error: "+e.message;$("connection").className="muted bad"});
