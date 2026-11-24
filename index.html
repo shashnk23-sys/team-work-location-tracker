@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14243a">
+<title>Team Work Location Tracker</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#172033;background:#f3f6fa}
+*{box-sizing:border-box}body{margin:0}header{background:#14243a;color:white;padding:22px 18px 18px}
+header h1{font-size:21px;margin:0 0 5px}header p{margin:0;color:#cbd5e1;font-size:13px}
+main{max-width:850px;margin:auto;padding:16px}
+.card{background:white;border:1px solid #e3e9f0;border-radius:15px;padding:16px;margin:0 0 14px;box-shadow:0 2px 8px #14243a0a}
+h2{font-size:17px;margin:0 0 12px}.muted{color:#64748b;font-size:13px}
+label{display:block;font-size:13px;font-weight:650;margin:10px 0 6px}
+select,input,button{font:inherit}select,input{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;background:white;color:#172033}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.statuses{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.status{border:1px solid #cbd5e1;background:white;border-radius:10px;padding:12px 6px;font-weight:700;color:#334155}
+.status.active{border:2px solid #2563eb;background:#eff6ff;color:#1d4ed8}
+button.primary{background:#2563eb;color:white;border:0;border-radius:10px;padding:13px 16px;font-weight:700;width:100%}
+button.secondary{background:#eef2f7;color:#243247;border:0;border-radius:9px;padding:9px 12px;font-weight:650}
+button:disabled{opacity:.55}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{padding:12px 8px;border-radius:11px;background:#f1f5f9;text-align:center}
+.stat b{display:block;font-size:24px}.stat span{font-size:12px;color:#64748b}
+.pill{display:inline-block;padding:4px 9px;border-radius:99px;font-size:12px;font-weight:700}
+.WFH{background:#dbeafe;color:#1d4ed8}.WFO{background:#dcfce7;color:#166534}.Leave{background:#fef3c7;color:#92400e}
+.list{display:flex;flex-direction:column;gap:8px}.person{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #edf1f5}.person:last-child{border:0}
+.calendar-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.dayname,.day{font-size:12px;text-align:center;padding:8px 2px}.dayname{color:#64748b;font-weight:700}
+.day{border:1px solid #e5eaf0;border-radius:8px;min-height:37px;background:white}.day.today{border:2px solid #2563eb}.day.selected{background:#dbeafe;border-color:#2563eb}.day.blank{border:0;background:transparent}
+.notice{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:10px;padding:11px;font-size:13px;line-height:1.45}
+.good{color:#166534}.bad{color:#b91c1c}
+footer{text-align:center;color:#64748b;font-size:12px;padding:8px 12px 25px}
+@media(max-width:520px){main{padding:12px}.row{grid-template-columns:1fr}.stats{gap:6px}.stat b{font-size:21px}}
+</style>
+</head>
+<body>
+<header><h1>Team Work Location Tracker</h1><p>Shared team status • WFH / WFO / Leave</p></header>
+<main>
+  <section class="card">
+    <h2>Update your status</h2>
+    <div class="row">
+      <div><label for="employee">Select your name</label><select id="employee"></select></div>
+      <div><label for="date">Date</label><input id="date" type="date"></div>
+    </div>
+    <div class="statuses">
+      <button class="status" data-status="WFO" type="button">WFO</button>
+      <button class="status" data-status="WFH" type="button">WFH</button>
+      <button class="status" data-status="Leave" type="button">Leave</button>
+    </div>
+    <button class="primary" id="save" disabled>Connect to Firebase first</button>
+    <p class="muted" id="saveMsg">Connecting to the shared team database…</p>
+  </section>
+
+  <section class="card">
+    <h2>Today's team overview</h2>
+    <div class="stats">
+      <div class="stat"><b id="countWFO">0</b><span>WFO</span></div>
+      <div class="stat"><b id="countWFH">0</b><span>WFH</span></div>
+      <div class="stat"><b id="countLeave">0</b><span>Leave</span></div>
+    </div>
+    <p class="muted" id="overviewDate"></p>
+    <div class="list" id="todayList"><p class="muted">Waiting for database…</p></div>
+  </section>
+
+  <section class="card">
+    <div class="calendar-head">
+      <button class="secondary" id="prevMonth" type="button">‹</button>
+      <strong id="monthLabel"></strong>
+      <button class="secondary" id="nextMonth" type="button">›</button>
+    </div>
+    <div class="calendar" id="calendar"></div>
+    <p class="muted">Choose a weekday to view or enter a status. This first test version shows weekdays only.</p>
+  </section>
+
+  <section class="card">
+    <h2>Team status for selected date</h2>
+    <div class="list" id="selectedList"><p class="muted">Select a date.</p></div>
+  </section>
+
+  <section class="card">
+    <h2>Connection</h2>
+    <p id="connection" class="muted">Connecting…</p>
+    <div class="notice">This is an early test build. It uses anonymous Firebase access and a selectable name, so it does not verify who a person really is. Do not use real employee details or treat this as official attendance until stronger access controls are added.</div>
+  </section>
+</main>
+<footer>Team coordination tool • Test with dummy names and data first</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCGw16AtHkayw_qa_HUwCMQUsFAeQSmPOA",
+  authDomain: "team-wfh-wfo-tracker.firebaseapp.com",
+  projectId: "team-wfh-wfo-tracker",
+  storageBucket: "team-wfh-wfo-tracker.firebasestorage.app",
+  messagingSenderId: "579873868975",
+  appId: "1:579873868975:web:f8254542788c66128dd85a",
+  measurementId: "G-7B41BZFQRC"
+};
+
+const members = [
+  {id:"manager", name:"Manager"},
+  {id:"lead1", name:"Lead 1"},{id:"lead2",name:"Lead 2"},{id:"lead3",name:"Lead 3"},
+  {id:"lead4",name:"Lead 4"},{id:"lead5",name:"Lead 5"},
+  ...Array.from({length:10},(_,i)=>({id:`processor${i+1}`,name:`Processor ${i+1}`}))
+];
+const $ = id => document.getElementById(id);
+const localISO = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const today = new Date(); today.setHours(0,0,0,0);
+let selectedStatus = "";
+let allRecords = {};
+let currentMonth = new Date(today.getFullYear(),today.getMonth(),1);
+let db, auth, unsubscribe;
+
+members.forEach(m=>{const o=document.createElement("option");o.value=m.id;o.textContent=m.name;$("employee").appendChild(o)});
+$("date").value=localISO(today);
+$("overviewDate").textContent=`${today.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"})}`;
+
+document.querySelectorAll(".status").forEach(btn=>btn.addEventListener("click",()=>{
+  selectedStatus=btn.dataset.status;
+  document.querySelectorAll(".status").forEach(b=>b.classList.toggle("active",b===btn));
+}));
+
+function recordKey(date,memberId){return `${date}_${memberId}`}
+function recordsFor(date){return members.map(m=>({member:m,record:allRecords[recordKey(date,m.id)]||null}))}
+function renderLists(){
+  const todayKey=localISO(today);
+  const todayRows=recordsFor(todayKey);
+  for(const s of ["WFO","WFH","Leave"]){$(`count${s}`).textContent=todayRows.filter(x=>x.record?.status===s).length}
+  $("todayList").innerHTML="";
+  todayRows.forEach(({member,record})=>{
+    const div=document.createElement("div");div.className="person";
+    const left=document.createElement("span");left.textContent=member.name;
+    const right=document.createElement("span");
+    if(record){const p=document.createElement("span");p.className=`pill ${record.status}`;p.textContent=record.status;right.appendChild(p)}
+    else{right.className="muted";right.textContent="Not updated"}
+    div.append(left,right);$("todayList").appendChild(div);
+  });
+  renderSelectedDate();
+}
+function renderSelectedDate(){
+  const date=$("date").value;
+  $("selectedList").innerHTML="";
+  recordsFor(date).forEach(({member,record})=>{
+    const div=document.createElement("div");div.className="person";
+    const left=document.createElement("span");left.textContent=member.name;
+    const right=document.createElement("span");
+    if(record){const p=document.createElement("span");p.className=`pill ${record.status}`;p.textContent=record.status;right.appendChild(p)}
+    else{right.className="muted";right.textContent="Not updated"}
+    div.append(left,right);$("selectedList").appendChild(div);
+  });
+}
+function renderCalendar(){
+  $("monthLabel").textContent=currentMonth.toLocaleDateString(undefined,{month:"long",year:"numeric"});
+  const cal=$("calendar");cal.innerHTML="";
+  ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].forEach(x=>{const d=document.createElement("div");d.className="dayname";d.textContent=x;cal.appendChild(d)});
+  const first=new Date(currentMonth.getFullYear(),currentMonth.getMonth(),1);
+  const mondayOffset=(first.getDay()+6)%7;
+  for(let i=0;i<mondayOffset;i++){const blank=document.createElement("div");blank.className="day blank";cal.appendChild(blank)}
+  const days=new Date(currentMonth.getFullYear(),currentMonth.getMonth()+1,0).getDate();
+  for(let n=1;n<=days;n++){
+    const d=new Date(currentMonth.getFullYear(),currentMonth.getMonth(),n);
+    const el=document.createElement("button");el.type="button";el.className="day";el.textContent=n;
+    if(d.getDay()===0||d.getDay()===6){el.disabled=true;el.style.opacity=".3"}
+    if(localISO(d)===localISO(today))el.classList.add("today");
+    if(localISO(d)===$("date").value)el.classList.add("selected");
+    el.addEventListener("click",()=>{$("date").value=localISO(d);currentMonth=new Date(d.getFullYear(),d.getMonth(),1);renderCalendar();renderSelectedDate()});
+    cal.appendChild(el);
+  }
+}
+$("date").addEventListener("change",()=>{const d=new Date(`${$("date").value}T12:00:00`);currentMonth=new Date(d.getFullYear(),d.getMonth(),1);renderCalendar();renderSelectedDate()});
+$("prevMonth").addEventListener("click",()=>{const min=new Date(today.getFullYear(),today.getMonth(),1);const next=new Date(currentMonth.getFullYear(),currentMonth.getMonth()-1,1);if(next>=min){currentMonth=next;renderCalendar()}});
+$("nextMonth").addEventListener("click",()=>{const max=new Date(today.getFullYear(),today.getMonth()+5,1);const next=new Date(currentMonth.getFullYear(),currentMonth.getMonth()+1,1);if(next<=max){currentMonth=next;renderCalendar()}});
+$("save").addEventListener("click",async()=>{
+  if(!selectedStatus){$("saveMsg").textContent="Choose WFO, WFH or Leave first.";return}
+  const member=members.find(m=>m.id===$("employee").value);
+  const date=$("date").value;
+  if(!date){$("saveMsg").textContent="Choose a date.";return}
+  $("save").disabled=true;
+  try{
+    await setDoc(doc(db,"statuses",recordKey(date,member.id)),{
+      employeeId:member.id,employeeName:member.name,date,status:selectedStatus,
+      updatedAt:new Date().toISOString()
+    });
+    $("saveMsg").textContent=`Saved ${selectedStatus} for ${member.name} on ${date}.`;
+    selectedStatus="";document.querySelectorAll(".status").forEach(b=>b.classList.remove("active"));
+  }catch(e){$("saveMsg").textContent=`Could not save: ${e.message}`;}
+  finally{$("save").disabled=false}
+});
+
+renderCalendar();
+try{
+  const app=initializeApp(firebaseConfig);auth=getAuth(app);db=getFirestore(app);
+  await signInAnonymously(auth);
+  $("connection").textContent="Signed in anonymously. Waiting for Firestore access…";
+  unsubscribe=onSnapshot(query(collection(db,"statuses"),orderBy("date")),snap=>{
+    allRecords={};snap.forEach(d=>allRecords[d.id]=d.data());
+    $("connection").textContent="Connected. Live team updates are active.";
+    $("connection").className="good";
+    $("save").disabled=false;$("save").textContent="Save status";
+    $("saveMsg").textContent="Choose your name, date and status.";
+    renderLists();
+  },err=>{
+    $("connection").textContent=`Firestore access error: ${err.message}. Check your Firestore Rules.`;
+    $("connection").className="bad";
+    $("save").disabled=true;
+  });
+}catch(e){
+  $("connection").textContent=`Firebase connection error: ${e.message}`;
+  $("connection").className="bad";
+}
+</script>
+</body>
+</html>
